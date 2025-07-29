@@ -5,7 +5,7 @@ import Notification from './components/UI/Notification';
 
 import { useEffect, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { sendCartData } from './store/cart-slice';
+import { sendCartData, fetchCartData } from './store/cart-actions';
 
 let isInitial = true;
 
@@ -15,13 +15,20 @@ function App() {
   const dispatch = useDispatch();
   const notification = useSelector((state) => state.ui.notification)
 
+  useEffect(() => {
+    dispatch(fetchCartData());
+  }, [dispatch])
+
   // using side effect to update database through a subscription to the cart slice data
   useEffect(() => {
     if (isInitial) {
       isInitial = false;
       return;
     }
-    dispatch(sendCartData(cart));
+
+    if (cart.changed) {
+      dispatch(sendCartData(cart));
+    }
   }, [cart, dispatch]);
 
   return (
